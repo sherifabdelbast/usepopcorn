@@ -65,7 +65,9 @@ body {
   gap: 2.4rem;
   justify-content: center;
 }
-
+nav > h1 {
+  font-size: 0.5rem;
+}
 .box {
   width: 42rem;
   max-width: 42rem;
@@ -396,3 +398,27 @@ EMPTY STAR
 </svg>
 
 */
+@media (max-width: 768px) {
+  body {
+    padding: 1rem;
+  }
+
+  .main {
+    flex-direction: column;
+    height: auto;
+  }
+
+  .box {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .nav-bar {
+    padding: 1rem;
+    height: auto;
+  }
+
+  .search {
+    width: 100%;
+  }
+}
