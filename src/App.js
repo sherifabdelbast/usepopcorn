@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import Box from "./Box";
 import NavBar from "./NavBar";
 import MovieDetails from "./MovieDetails";
@@ -6,19 +6,19 @@ import Loader from "./Loader";
 import WatchedSummary from "./WatchedSummary";
 import { MovieList } from "./MovieList";
 import WatchedMoviesList from "./WatchedMoviesList";
-import { KEY } from "./constants";
+import { useMovies } from "./useMovies";
+import { useLocalStorageState } from "./useLocalStorageState";
+import { useKey } from "./useKey";
 
 export default function App() {
   const [query, setQuery] = useState("");
 
   const [selectedId, setSelectedId] = useState(null);
 
+  const { movies, isLoading, error } = useMovies(query);
   // const [watched, setWatched] = useState([]);
-  const [watched, setWatched] = useState(function () {
-    const storedValue = localStorage.getItem("watched");
-    console.log(storedValue);
-    return JSON.parse(storedValue);
-  });
+
+  const [watched, setWatched] = useLocalStorageState([], "watched");
 
   function handleSelectMovie(id) {
     setSelectedId((selectedId) => (id === selectedId ? null : id));
@@ -35,13 +35,6 @@ export default function App() {
   function handleDeleteWatched(id) {
     setWatched((watched) => watched.filter((movie) => movie.imdbID !== id));
   }
-
-  useEffect(
-    function () {
-      localStorage.setItem("watched", JSON.stringify(watched));
-    },
-    [watched]
-  );
 
   return (
     <>
@@ -93,23 +86,12 @@ function ErrorMessage({ message }) {
 function Search({ query, setQuery }) {
   const inputEl = useRef(null);
 
-  useEffect(
-    function () {
-      function callback(e) {
-        if (document.activeElement === inputEl.current) {
-          return;
-        }
-        if (e.code === "Enter") {
-          inputEl.current.focus();
-          setQuery("");
-        }
-      }
-      document.addEventListener("keydown", callback);
+  useKey("Enter", function (e) {
+    if (document.activeElement === inputEl.current) return;
 
-      return () => document.removeEventListener("keydown", callback);
-    },
-    [setQuery]
-  );
+    inputEl.current.focus();
+    setQuery("");
+  });
 
   return (
     <input

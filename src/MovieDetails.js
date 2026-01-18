@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import Loader from "./Loader";
 import StarRating from "./StarRating";
 import { KEY } from "./constants";
+import { useKey } from "./useKey";
 
 export default function MovieDetails({
   selectedId,
@@ -19,7 +20,7 @@ export default function MovieDetails({
     function () {
       if (userRating) countRef.current++;
     },
-    [userRating]
+    [userRating],
   );
 
   const {
@@ -58,7 +59,7 @@ export default function MovieDetails({
       setIsLoading(true);
       async function getMovieDetails() {
         const res = await fetch(
-          `http://www.omdbapi.com/?apikey=${KEY}&i=${selectedId}`
+          `http://www.omdbapi.com/?apikey=${KEY}&i=${selectedId}`,
         );
         const data = await res.json();
         setMovie(data);
@@ -66,25 +67,10 @@ export default function MovieDetails({
       }
       getMovieDetails();
     },
-    [selectedId]
+    [selectedId],
   );
 
-  useEffect(
-    function () {
-      function callback(e) {
-        if (e.code === "Escape") {
-          onCloseMovie();
-          console.log("Closing");
-        }
-      }
-      document.addEventListener("keydown", callback);
-
-      return function () {
-        document.removeEventListener("keydown", callback);
-      };
-    },
-    [onCloseMovie]
-  );
+  useKey("Escape", onCloseMovie);
 
   useEffect(
     function () {
@@ -96,7 +82,7 @@ export default function MovieDetails({
         document.title = "usePopcorn";
       };
     },
-    [title]
+    [title],
   );
 
   return (
